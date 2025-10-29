@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <time.h>
+
+#define MAX 1000
+long long memo[MAX];
+
+long long fib_memo(int n) {
+    if (n <= 1)
+        return n;
+    if (memo[n] != -1)
+        return memo[n];
+    memo[n] = fib_memo(n-1) + fib_memo(n-2);
+    return memo[n];
+}
+
+int main() {
+    int n;
+    printf("Enter n: ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < MAX; i++) memo[i] = -1;
+
+    clock_t start = clock();
+    long long result = fib_memo(n);
+    clock_t end = clock();
+
+    double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("Fib(%d) = %lld\n", n, result);
+    printf("Time taken = %f sec\n", time_taken);
+
+    return 0;
+}

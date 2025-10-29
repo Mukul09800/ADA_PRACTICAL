@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Bubble Sort function
+void bubbleSort(int arr[], int n) {
+    int i, j, temp;
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap arr[j] and arr[j+1]
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int n, choice;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    int *arr = (int *)malloc(n * sizeof(int));
+
+    printf("Choose input method:\n1. Read from file\n2. Generate random numbers\nChoice: ");
+    scanf("%d", &choice);
+
+    if (choice == 1) {
+        FILE *file = fopen("input.txt", "r");
+        if (file == NULL) {
+            printf("Error: Could not open file\n");
+            return 1;
+        }
+        for (int i = 0; i < n; i++) {
+            fscanf(file, "%d", &arr[i]);
+        }
+        fclose(file);
+    } else {
+        srand(time(0));
+        for (int i = 0; i < n; i++) {
+            arr[i] = rand() % 1000; // random numbers between 0–999
+        }
+    }
+
+    clock_t start, end;
+    start = clock();
+    bubbleSort(arr, n);
+    end = clock();
+
+    double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time taken to sort %d elements: %f seconds\n", n, time_taken);
+
+    free(arr);
+    return 0;
+}

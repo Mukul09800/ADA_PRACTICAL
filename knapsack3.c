@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+struct Item {
+int value;
+int weight;
+};
+int compare(const void* a, const void* b) {
+struct Item* itemA = (struct Item*)a;
+struct Item* itemB = (struct Item*)b;
+double ratioA = (double)itemA->value / itemA->weight;
+double ratioB = (double)itemB->value / itemB->weight;
+if (ratioA < ratioB)
+return 1;
+else if (ratioA > ratioB)
+return -1;
+else
+return 0;
+}
+double fractionalKnapsack(int W, struct Item arr[], int n) {
+qsort(arr, n, sizeof(struct Item), compare);
+int currentWeight = 0;
+double finalValue = 0.0;
+for (int i = 0; i < n; i++) {
+if (currentWeight + arr[i].weight <= W) {
+currentWeight += arr[i].weight;
+finalValue += arr[i].value;
+} else {
+int remain = W - currentWeight;
+finalValue += arr[i].value * ((double)remain / arr[i].weight);
+break;
+}
+}
+
+return finalValue;
+}
+int max(int a, int b) {
+return (a > b) ? a : b;
+}
+int knapSack(int W, int wt[], int val[], int n) {
+int K[n + 1][W + 1];
+for (int i = 0; i <= n; i++) {
+for (int w = 0; w <= W; w++) {
+if (i == 0 || w == 0)
+K[i][w] = 0;
+else if (wt[i - 1] <= w)
+K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w]);
+else
+K[i][w] = K[i - 1][w];
+}
+}
+return K[n][W];
+}
+int main() {
+int n, W, i;
+printf("Enter number of items: ");
+scanf("%d"
+, &n);
+struct Item arr[n];
+printf("Enter items with weight and value as {w,p} (e.g., 10,60):\n");
+for (i = 0; i < n; i++) {
+printf("Item %d: ", i + 1);
+scanf("%d,%d"
+, &arr[i].weight, &arr[i].value);
+}
+printf("Enter capacity of knapsack: ");
+scanf("%d"
+, &W);
+clock_t start = clock();
+double greedyVal = fractionalKnapsack(W, arr, n);
+clock_t end = clock();
+double greedyTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+int wt[n], val[n];
+for (i = 0; i < n; i++) {
+wt[i] = arr[i].weight;
+val[i] = arr[i].value;
+}
+start = clock();
+int dpVal = knapSack(W, wt, val, n);
+end = clock();
+double dpTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("\nResults:\n");
+printf("Greedy (Fractional): Max Value = %.2f, Time = %.6f sec\n"
+,
+greedyVal, greedyTime);
+printf("Dynamic (0/1): Max Value = %d, Time = %.6f sec\n", dpVal, dpTime);
+return 0;
+}
